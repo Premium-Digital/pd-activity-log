@@ -43,7 +43,7 @@ class ActivityLoggerHooks {
         if (!$this->shouldLog($post)) return;
         if ($post->post_status === 'trash') return;
 
-        $action = $update ? 'update' : 'create';
+        $action = $update ? 'updated / created' : 'created';
     
         $this->logger->addLog(
             $postId,
@@ -51,7 +51,7 @@ class ActivityLoggerHooks {
             $action,
             Helpers::getCurrentUser()->ID,
             Helpers::getCurrentUser()->data->user_login,
-            ["User " . Helpers::getCurrentUser()->data->user_login . " performed {$action} on post ID {$postId}."],
+            ["User " . Helpers::getCurrentUser()->data->user_login . " {$action} {$post->post_type} {$post->post_title}."],
         );
     }
 
@@ -67,7 +67,7 @@ class ActivityLoggerHooks {
             'delete',
             Helpers::getCurrentUser()->ID,
             Helpers::getCurrentUser()->data->user_login,
-            ["User " . Helpers::getCurrentUser()->data->user_login . " performed delete on {$post->post_type} {$post->post_title}."],
+            ["User " . Helpers::getCurrentUser()->data->user_login . " deleted {$post->post_type} {$post->post_title}."],
         );
     }
 
@@ -82,7 +82,7 @@ class ActivityLoggerHooks {
             'trash',
             Helpers::getCurrentUser()->ID,
             Helpers::getCurrentUser()->data->user_login,
-            ["User " . Helpers::getCurrentUser()->data->user_login . " performed trash on post ID {$postId}."],
+            ["User " . Helpers::getCurrentUser()->data->user_login . " trashed {$post->post_type} {$post->post_title}."],
         );
     }
 
