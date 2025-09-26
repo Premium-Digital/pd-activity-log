@@ -2,7 +2,7 @@
     "name": "stlpl/pd-activity-log",
     "description": "PD Activity Log plugin for WordPress",
     "type": "wordpress-plugin",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "autoload": {
     "psr-4": {
         "PdActivityLog\\": "App/"
