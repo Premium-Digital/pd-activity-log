@@ -1,0 +1,20 @@
+{
+    "name": "stlpl/pd-activity-log",
+    "description": "PD Activity Log plugin for WordPress",
+    "type": "wordpress-plugin",
+    "version": "1.0.0",
+    "autoload": {
+    "psr-4": {
+        "PdActivityLog\\": "App/"
+       }
+    },
+    "authors": [
+        {
+            "name": "maxkonar",
+            "email": "k.karasiewicz@premiumdigital.pl"
+        }
+    ],
+    "require": {
+        "yahnis-elsts/plugin-update-checker": "^5.5"
+    }
+}
