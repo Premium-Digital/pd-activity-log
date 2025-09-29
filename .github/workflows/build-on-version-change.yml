@@ -18,24 +18,14 @@ jobs:
       - name: 📥 Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # potrzebne do diffów
 
       - name: 📊 Check for version change
         id: diff
         run: |
-          if git rev-parse HEAD~1 >/dev/null 2>&1; then
-            PREV_COMMIT=$(git rev-parse HEAD~1)
-            if git diff $PREV_COMMIT HEAD -- pd-activity-log.php | grep -E '^[+-]\s*Version:'; then
-              CHANGED=1
-            else
-              CHANGED=0
-            fi
-          else
-            echo "First commit – forcing build."
-            CHANGED=1
-          fi
+          PREV_COMMIT=$(git rev-parse HEAD~1)
+          CHANGED=$(git diff $PREV_COMMIT HEAD -- pd-activity-log.php | grep -c '^+.*Version:')
           echo "changed=$CHANGED" >> $GITHUB_OUTPUT
-        shell: bash
 
       - name: 🏷 Extract version from plugin
         id: extract
@@ -57,15 +47,13 @@ jobs:
         with:
           node-version: 22.14.0
 
-      - name: 🐘 Setup PHP 8.2
+      - name: 🐘 Setup PHP 8.2.12
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
+          php-version: 8.2.12
 
       - name: 📦 Install dependencies (npm)
-        run: |
-          rm -rf node_modules package-lock.json
-          npm install --legacy-peer-deps
+        run: npm install
 
       - name: 📜 Install PHP dependencies (composer)
         run: composer install --no-dev --optimize-autoloader
@@ -75,7 +63,7 @@ jobs:
 
       - name: 🗜 Create ZIP
         run: |
-          mkdir -p build
+          mkdir build
           zip -r build/pd-activity-log.zip . \
             -x "*.git*" "*.github*" "node_modules/*" "src/*" "tests/*" "package-lock.json"
 
