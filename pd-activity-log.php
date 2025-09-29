@@ -2,7 +2,7 @@
 /**
  * Plugin Name: PD Activity Log
  * Description: Monitor user (administrator) activities like editing posts, pages, products etc.
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: kkarasiewicz
  * Text Domain: pd-activity-log
  */

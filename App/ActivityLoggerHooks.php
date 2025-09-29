@@ -55,7 +55,6 @@ class ActivityLoggerHooks {
         );
     }
 
-
     public function handleDeletePost($postId) {
         $post = get_post($postId);
         if (!$post) return;
@@ -85,5 +84,4 @@ class ActivityLoggerHooks {
             ["User " . Helpers::getCurrentUser()->data->user_login . " trashed {$post->post_type} {$post->post_title}."],
         );
     }
-
 }

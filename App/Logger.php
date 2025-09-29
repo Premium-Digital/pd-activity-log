@@ -74,19 +74,19 @@ class Logger {
             return;
         }
 
-        $this->wpdb->query(
-            $this->wpdb->prepare(
-                "INSERT INTO {$this->tableName} ({$this->objectId}, {$this->objectType}, {$this->details}, {$this->userId}, {$this->userLogin}, {$this->status}, {$this->logTime}) 
-                VALUES (%d, %s, %s, %d, %s, %s, %s)",
-                $objectId,
-                $objectType,
-                wp_json_encode($details, JSON_UNESCAPED_UNICODE),
-                $userId,
-                $userLogin,
-                $status,
-                current_time('mysql')
-            )
+        $sql = $this->wpdb->prepare(
+            "INSERT INTO {$this->tableName} (object_id, object_type, details, user_id, user_login, status, log_time) 
+            VALUES (%d, %s, %s, %d, %s, %s, %s)",
+            $objectId,
+            $objectType,
+            wp_json_encode($details, JSON_UNESCAPED_UNICODE),
+            $userId,
+            $userLogin,
+            $status,
+            current_time('mysql')
         );
+        $this->wpdb->query($sql);
+
     }
 
     public function getLogs(int $limit, int $offset, string $search = '', ?string $objectType = null) {
@@ -104,8 +104,8 @@ class Logger {
         }
 
         $whereSql = $where ? "WHERE " . implode(" AND ", $where) : "";
+        $sql = "SELECT * FROM {$this->tableName} {$whereSql} ORDER BY log_time DESC LIMIT %d OFFSET %d";
 
-        $sql = "SELECT * FROM {$this->tableName} {$whereSql} ORDER BY {$this->logTime} DESC LIMIT %d OFFSET %d";
         $params[] = $limit;
         $params[] = $offset;
 
@@ -130,10 +130,17 @@ class Logger {
 
         $whereSql = $where ? "WHERE " . implode(" AND ", $where) : "";
 
-        $sql = "SELECT COUNT(*) FROM {$this->tableName} {$whereSql}";
-        return (int) $this->wpdb->get_var(
-            $this->wpdb->prepare($sql, ...$params)
-        );
+        if (!empty($params)) {
+            $sql = "SELECT COUNT(*) FROM {$this->tableName} {$whereSql}";
+            return (int) $this->wpdb->get_var(
+                $this->wpdb->prepare($sql, ...$params)
+            );
+        } else {
+            // brak dynamicznych wartości, nie trzeba prepare
+            return (int) $this->wpdb->get_var(
+                "SELECT COUNT(*) FROM {$this->tableName} {$whereSql}"
+            );
+        }
     }
 
     public function deleteLogs(array $ids) {
@@ -142,11 +149,11 @@ class Logger {
         }
 
         $placeholders = implode(',', array_fill(0, count($ids), '%d'));
-        $this->wpdb->query(
-            $this->wpdb->prepare(
-                "DELETE FROM {$this->tableName} WHERE {$this->id} IN ($placeholders)",
-                ...$ids
-            )
+        $sql = $this->wpdb->prepare(
+            "DELETE FROM {$this->tableName} WHERE id IN ($placeholders)",
+            ...$ids
         );
+
+        $this->wpdb->query($sql);
     }
 }
