@@ -18,21 +18,21 @@ jobs:
       - name: 📥 Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # potrzebne do diffów
+          fetch-depth: 0
 
       - name: 📊 Check for version change
         id: diff
         run: |
           if git rev-parse HEAD~1 >/dev/null 2>&1; then
             PREV_COMMIT=$(git rev-parse HEAD~1)
-            if git diff $PREV_COMMIT HEAD -- pd-activity-log.php | grep -q '^+.*Version:'; then
+            if git diff $PREV_COMMIT HEAD -- pd-activity-log.php | grep -E '^[+-]\s*Version:'; then
               CHANGED=1
             else
               CHANGED=0
             fi
           else
-            echo "Only one commit – assuming no version change."
-            CHANGED=0
+            echo "First commit – forcing build."
+            CHANGED=1
           fi
           echo "changed=$CHANGED" >> $GITHUB_OUTPUT
         shell: bash
@@ -57,10 +57,10 @@ jobs:
         with:
           node-version: 22.14.0
 
-      - name: 🐘 Setup PHP 8.2.12
+      - name: 🐘 Setup PHP 8.2
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2.12
+          php-version: 8.2
 
       - name: 📦 Install dependencies (npm)
         run: |
@@ -75,7 +75,7 @@ jobs:
 
       - name: 🗜 Create ZIP
         run: |
-          mkdir build
+          mkdir -p build
           zip -r build/pd-activity-log.zip . \
             -x "*.git*" "*.github*" "node_modules/*" "src/*" "tests/*" "package-lock.json"
 
