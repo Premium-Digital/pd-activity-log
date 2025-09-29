@@ -3,7 +3,7 @@ name: 🧠 Build on Plugin Version Change
 on:
   push:
     branches:
-      - main
+      - master
 
 permissions:
   contents: write
