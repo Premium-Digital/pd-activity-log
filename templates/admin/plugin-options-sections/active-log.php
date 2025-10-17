@@ -1,5 +1,5 @@
 <?php
-    $activeLog = get_option('pd_activity_log_enabled', false);
+    $activeLog = get_option('pd_activity_log_enabled');
 ?>
 
 <tr class="plugin-settings__row">
